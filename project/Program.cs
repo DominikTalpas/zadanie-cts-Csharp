@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Reflection;
 using System.Text;
 using HtmlAgilityPack;
 
@@ -8,10 +9,10 @@ class Program
 {
     static void Main()
     {
-        // URL of the main page
+        
         string url = "https://www.cts-tradeit.cz/kariera/";
 
-        // Fetch the main page content
+        
         string mainPageContent = "";
         using (WebClient client = new WebClient())
         {
@@ -29,7 +30,7 @@ class Program
         HtmlDocument mainPageDoc = new HtmlDocument();
         mainPageDoc.LoadHtml(mainPageContent);
 
-        // Find all job links
+        
         var jobLinks = mainPageDoc.DocumentNode.SelectNodes("//a[@href]");
         if (jobLinks != null)
         {
@@ -39,9 +40,9 @@ class Program
                 if (href.Contains("/kariera/"))
                 {
                     string fullLink = "https://www.cts-tradeit.cz" + href;
-                    string jobTitle = href.TrimEnd('/').Split('/')[^1].Replace(" ", "_");
+                    string jobTitle = href.TrimEnd('/').Split('/')[^1];
 
-                    // Fetch job page content
+                   
                     string jobPageContent = "";
                     using (WebClient jobClient = new WebClient())
                     {
@@ -58,8 +59,8 @@ class Program
 
                     HtmlDocument jobPageDoc = new HtmlDocument();
                     jobPageDoc.LoadHtml(jobPageContent);
-
-                    // Extract the "Co konkrétně Vás čeká?" section
+                    
+                   
                     var section = jobPageDoc.DocumentNode.SelectSingleNode("//h2[text()='Co Tě u nás čeká?']");
                     if (section != null)
                     {
@@ -79,9 +80,13 @@ class Program
                         }
 
                         string text = requirementsText.ToString().Trim();
-                        string fileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"{jobTitle}.txt");
+                        
+                        string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                        DirectoryInfo binDirectory = Directory.GetParent(baseDirectory).Parent.Parent.Parent;
+                        string projectPath  = binDirectory.FullName;
+                        string fileName = Path.Combine(projectPath, $"{jobTitle}.txt");
 
-                        // Save the requirementsText to a text file
+                        
                         using (StreamWriter sw = new StreamWriter(fileName, false, Encoding.UTF8))
                         {
                             sw.WriteLine($"Co Tě u nás čeká? {text}");
