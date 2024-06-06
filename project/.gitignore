@@ -1,0 +1,3 @@
+# Ignore build directories
+[Bb]in/
+[Oo]bj/
