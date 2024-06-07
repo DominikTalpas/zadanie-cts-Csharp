@@ -64,13 +64,11 @@ class Program
                     var section = jobPageDoc.DocumentNode.SelectSingleNode("//h2[text()='Co Tě u nás čeká?']");
                     if (section != null)
                     {
-                        var elementUl = section.SelectSingleNode("following-sibling::ul");
+
                         var elementP = section.SelectNodes("following-sibling::*");
-
+                        var elementUl = section.SelectSingleNode("following-sibling::ul");
+                        
                         StringBuilder requirementsText = new StringBuilder();
-                        if (elementUl != null)
-                            requirementsText.Append(elementUl.InnerText.Trim());
-
                         foreach (var elem in elementP)
                         {
                             if (elem.Name == "ul")
@@ -78,7 +76,11 @@ class Program
                             if (elem.Name == "p")
                                 requirementsText.Append(elem.InnerText.Trim());
                         }
+                        
+                        if (elementUl != null)
+                            requirementsText.Append(elementUl.InnerText.Trim());
 
+                       
                         string text = requirementsText.ToString().Trim();
                         
                         string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
